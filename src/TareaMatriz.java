@@ -3,114 +3,82 @@ import java.util.Scanner;
 public class TareaMatriz {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-
         boolean continuar = true;
-        int[][] matriz = null; // Variable para almacenar la matriz
-
-        Menu menu = new Menu();
-        ValidarOpcion validarOpcion = new ValidarOpcion();
-        CrearMatriz crearMatriz = new CrearMatriz();
-        MostrarMatriz mostrarMatriz = new MostrarMatriz();
-        LlenarMatriz llenarMatriz = new LlenarMatriz();
-        MostrarFila mostrarFila = new MostrarFila();
-        VerificarMatrizCero verificarMatrizCero = new VerificarMatrizCero();
+        int[][] matriz = null;
 
         while (continuar) {
-            menu.mostrarMenu();
+            mostrarMenu();
             int opcion = scanner.nextInt();
 
-            if (validarOpcion.validarOpcion(opcion)) {
+            if (validarOpcion(opcion)) {
                 switch (opcion) {
                     case 1:
-                        System.out.print("Ingrese número de filas: ");
-                        int filas = scanner.nextInt();
-                        System.out.print("Ingrese número de columnas: ");
-                        int columnas = scanner.nextInt();
-
-                        if (filas > 0 && columnas > 0) {
-                            matriz = crearMatriz.crearMatriz(filas, columnas);
-                            System.out.println("Matriz creada con " + filas + " filas y " + columnas + " columnas.");
-                            llenarMatriz.llenarMatriz(matriz);
-                            mostrarMatriz.mostrarMatriz(matriz);
-                        } else {
-                            System.out.println("Dimensiones NO válidas. Intente nuevamente.");
-                        }
+                        matriz = crearMatriz(scanner);
                         break;
-
                     case 2:
-                        if (matriz != null) {
-                            System.out.print("Ingrese número de fila para mostrar: ");
-                            int fila = scanner.nextInt() - 1;
-                            mostrarFila.mostrarFila(matriz, fila);
-                        } else {
-                            System.out.println("Primero debe crear la matriz.");
-                        }
+                        mostrarFila(matriz, scanner);
                         break;
-
                     case 3:
-                        if (matriz != null) {
-                            if (verificarMatrizCero.matrizCero(matriz)) {
-                                System.out.println("La matriz es de tipo cero.");
-                            } else {
-                                System.out.println("La matriz no es de tipo cero.");
-                            }
-                        } else {
-                            System.out.println("Primero debe crear la matriz.");
-                        }
+                        verificarMatrizCero(matriz);
                         break;
-
                     case 4:
                         System.out.println("Saliendo del programa.");
                         continuar = false;
                         break;
-
                     default:
-                        System.out.println("Opción no válida. Intente nuevamente.");
+                        System.out.println("Opción no válida.");
                 }
             } else {
-                System.out.println("Opción inválida. Intente nuevamente.");
+                System.out.println("Opción inválida.");
             }
         }
 
         scanner.close();
     }
-}
 
-class Menu {
-    public void mostrarMenu() {
+    public static void mostrarMenu() {
         System.out.println("\n--- Menú ---");
         System.out.println("1. Crear matriz");
-        System.out.println("2. Mostrar fila de la matriz");
-        System.out.println("3. Verificar si la matriz es tipo cero");
+        System.out.println("2. Mostrar fila");
+        System.out.println("3. Verificar matriz tipo cero");
         System.out.println("4. Salir");
         System.out.print("Elija una opción: ");
     }
-}
 
-class ValidarOpcion {
-    public boolean validarOpcion(int opcion) {
+    public static boolean validarOpcion(int opcion) {
         return opcion >= 1 && opcion <= 4;
     }
-}
 
-class CrearMatriz {
-    public int[][] crearMatriz(int filas, int columnas) {
-        return new int[filas][columnas];
+    public static int[][] crearMatriz(Scanner scanner) {
+        System.out.print("Filas: ");
+        int filas = scanner.nextInt();
+        System.out.print("Columnas: ");
+        int columnas = scanner.nextInt();
+
+        if (validarDimensiones(filas, columnas)) {
+            int[][] matriz = new int[filas][columnas];
+            llenarMatriz(matriz);
+            mostrarMatriz(matriz);
+            return matriz;
+        } else {
+            System.out.println("Dimensiones no válidas.");
+            return null;
+        }
     }
-}
 
-class LlenarMatriz {
-    public void llenarMatriz(int[][] matriz) {
+    public static boolean validarDimensiones(int filas, int columnas) {
+        return filas > 0 && columnas > 0;
+    }
+
+    public static void llenarMatriz(int[][] matriz) {
         for (int i = 0; i < matriz.length; i++) {
             for (int j = 0; j < matriz[i].length; j++) {
                 matriz[i][j] = (int) (Math.random() * 10);
             }
         }
     }
-}
 
-class MostrarMatriz {
-    public void mostrarMatriz(int[][] matriz) {
+    public static void mostrarMatriz(int[][] matriz) {
         System.out.println("Contenido de la matriz:");
         for (int i = 0; i < matriz.length; i++) {
             for (int j = 0; j < matriz[i].length; j++) {
@@ -119,37 +87,44 @@ class MostrarMatriz {
             System.out.println();
         }
     }
-}
 
-class MostrarFila {
-    public void mostrarFila(int[][] matriz, int fila) {
-        if (fila >= 0 && fila < matriz.length) {
-            System.out.print("Contenido de la fila " + (fila + 1) + ": ");
-            for (int j = 0; j < matriz[fila].length; j++) {
-                System.out.print(matriz[fila][j] + " ");
+    public static void mostrarFila(int[][] matriz, Scanner scanner) {
+        if (matriz != null) {
+            System.out.print("Número de fila: ");
+            int fila = scanner.nextInt() - 1;
+            if (fila >= 0 && fila < matriz.length) {
+                for (int j = 0; j < matriz[fila].length; j++) {
+                    System.out.print(matriz[fila][j] + " ");
+                }
+                System.out.println();
+            } else {
+                System.out.println("Fila fuera de rango.");
             }
-            System.out.println();
         } else {
-            System.out.println("Número de fila fuera de rango.");
+            System.out.println("Primero debe crear la matriz.");
         }
     }
-}
 
-class VerificarMatrizCero {
-    public boolean matrizCero(int[][] matriz) {
-        int contadorCeros = 0;
-        int totalElementos = matriz.length * matriz[0].length;
+    public static void verificarMatrizCero(int[][] matriz) {
+        if (matriz != null) {
+            int contadorCeros = 0;
+            int totalElementos = matriz.length * matriz[0].length;
 
-        for (int i = 0; i < matriz.length; i++) {
-            for (int j = 0; j < matriz[i].length; j++) {
-                if (matriz[i][j] == 0) {
-                    contadorCeros++;
+            for (int i = 0; i < matriz.length; i++) {
+                for (int j = 0; j < matriz[i].length; j++) {
+                    if (matriz[i][j] == 0) {
+                        contadorCeros++;
+                    }
                 }
             }
-        }
 
-        return (contadorCeros > totalElementos / 2);
+            if (contadorCeros > totalElementos / 2) {
+                System.out.println("La matriz es tipo cero.");
+            } else {
+                System.out.println("La matriz no es tipo cero.");
+            }
+        } else {
+            System.out.println("Primero debe crear la matriz.");
+        }
     }
 }
-
-
